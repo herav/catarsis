@@ -1,0 +1,13 @@
+npx tsc --init
+npx tsc --build
+
+POSGRESQL
+
+psql -U posgres
+
+CREATE DATABASE nameDB;
+
+\l          para listar db
+\c catarsis para cambiar a la bd
+\dt         para listar tablas
+\d users    para ver tabla

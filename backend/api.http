@@ -1,0 +1,11 @@
+###Home
+GET http://localhost:3000/
+
+###USERS
+GET http://localhost:3000/users
+
+###QUESTIONS
+GET http://localhost:3000/questions
+
+###ANSWERS
+GET http://localhost:3000/answers
