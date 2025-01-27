@@ -1,11 +1,27 @@
 ###Home
 GET http://localhost:3000/
 
-###USERS
+### GET USERS
 GET http://localhost:3000/users
+
+### GET USER
+GET http://localhost:3000/users/1
+
+### POST USER
+POST http://localhost:3000/users
+
+### PUT USER
+PUT http://localhost:3000/users/1
+
+### DELETE USER
+DELETE http://localhost:3000/users/1
+
 
 ###QUESTIONS
 GET http://localhost:3000/questions
 
 ###ANSWERS
 GET http://localhost:3000/answers
+
+###FLASHBACKS
+GET http://localhost:3000/flashbacks
