@@ -9,6 +9,13 @@ GET http://localhost:3000/users/1
 
 ### POST USER
 POST http://localhost:3000/users
+Content-Type: application/json
+
+{   
+    "id":1,
+    "email":"user@gmail.com",
+    "password": "123454"
+}
 
 ### PUT USER
 PUT http://localhost:3000/users/1
