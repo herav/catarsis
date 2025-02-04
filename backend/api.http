@@ -4,25 +4,34 @@ GET http://localhost:3000/
 ### GET USERS
 GET http://localhost:3000/users
 
-### GET USER
-GET http://localhost:3000/users/1
+###GET USERS by Option
+GET http://localhost:3000/users?option=DesireOpion 
+
+### GET USER by name
+GET http://localhost:3000/users/dy
 
 ### POST USER
 POST http://localhost:3000/users
 Content-Type: application/json
 
 {   
-    "id":1,
-    "email":"user@gmail.com",
-    "password": "123454"
+    "name": "dy",
+    "email":"dy@gmail.com",
+    "password": "dy123456"
 }
 
-### PUT USER
-PUT http://localhost:3000/users/1
-
 ### DELETE USER
-DELETE http://localhost:3000/users/1
+DELETE http://localhost:3000/users/dyla
 
+### PUT USER
+PUT http://localhost:3000/users/dylalu
+Content-Type: application/json
+
+{   
+    "name": "dy",
+    "email":"dy@gmail.com",
+    "password": "dy123456"
+}
 
 ###QUESTIONS
 GET http://localhost:3000/questions

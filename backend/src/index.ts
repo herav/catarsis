@@ -3,7 +3,7 @@ import { PORT } from "./config"
 import UsersRouter from "./users/users.routes"
 
 const app = express()
-
+app.disable("x-powered-by")
 app.use(express.json())
 app.get("/",(_req,res)=>{res.send("Hello World!!! This is catarsis")})
 app.use(UsersRouter)
