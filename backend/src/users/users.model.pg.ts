@@ -1,5 +1,5 @@
 import { executeQuery } from "../DB.utils.pg";
-import { getUsersQuery,getUserQuery,uuidQuery,postUserQuery,deleteUserQuery, getUserByIDQuery} from "./users.querys";
+import { getUsersQuery,getUserQuery,uuidQuery,postUserQuery,deleteUserQuery, getUserByIDQuery, putUserQuery} from "./users.querys";
 import { User } from "./user.class";
 
 
@@ -52,21 +52,10 @@ export class UserModel{
     }
 
     static async putUser(name:string,data:Record<string,any>):Promise<User>{
-        const values:any[] = []
-        const clauses:string[]=[]
-        let index = 1
-        for(const key in data){
-            if(data.hasOwnProperty(key)){
-                clauses.push(`${key} = $${index}`)
-                values.push(data[key])
-                index++
-            }
-        }
-        values.push(name)
-        const putUserQuery = `UPDATE users SET ${clauses.join(', ')} WHERE name = $${index}`
         try{
             const id = (await executeQuery(getUserQuery,[name])).rows[0].id
-            await executeQuery(putUserQuery,values)
+            const {putQuery,values} = await putUserQuery(name, data)
+            await executeQuery(putQuery,values)
             const user = (await executeQuery(getUserByIDQuery,[id])).rows[0] as User
             return user
         }
