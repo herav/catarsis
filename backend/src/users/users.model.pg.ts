@@ -1,38 +1,13 @@
-import { DB_USER,DB_HOST,DB_PASSWORD,DB_DATABASE,DB_PORT} from "../config";
-import { Pool, PoolClient, QueryResult} from "pg";
+import { executeQuery } from "../DB.utils.pg";
 import { getUsersQuery,getUserQuery,uuidQuery,postUserQuery,deleteUserQuery, getUserByIDQuery} from "./users.querys";
 import { User } from "./user.class";
 
-const pool = new Pool({
-    user: DB_USER,
-    host: DB_HOST,
-    password: DB_PASSWORD,
-    database: DB_DATABASE,
-    port: +DB_PORT
-})
-
-async function fetchDB(query:string,params:string[]):Promise<QueryResult<any>>{
-    let client:PoolClient|undefined
-    let queryResult:QueryResult<any>
-    try{
-        client = await pool.connect()
-        queryResult = await client.query(query,params)
-        return queryResult
-    }
-    catch(error){
-        console.error("Error en Modelo fetchDB():",error)
-        throw error
-    }
-    finally{
-        if(client){client.release()}
-    }
-}
 
 export class UserModel{
 
     static async getUsers():Promise<User[]>{
         try{
-            const data = await fetchDB(getUsersQuery,[])
+            const data = await executeQuery(getUsersQuery,[])
             return data.rows as User[]  
         }
         catch(error){
@@ -43,7 +18,7 @@ export class UserModel{
 
     static async getUser(name:string):Promise<User>{
         try{
-            const data = await fetchDB(getUserQuery,[name])
+            const data = await executeQuery(getUserQuery,[name])
             return data.rows[0] as User
         }
         catch(error){
@@ -54,9 +29,9 @@ export class UserModel{
 
     static async postUser(user:User):Promise<User>{
         try{
-            user.id = (await fetchDB(uuidQuery,[])).rows[0].gen_random_uuid
-            await fetchDB(postUserQuery,[user.id,user.name,user.email,user.password])
-            const newUser = (await fetchDB(getUserQuery,[user.name])).rows[0] as User
+            user.id = (await executeQuery(uuidQuery,[])).rows[0].gen_random_uuid
+            await executeQuery(postUserQuery,[user.id,user.name,user.email,user.password])
+            const newUser = (await executeQuery(getUserQuery,[user.name])).rows[0] as User
             return newUser
         }
         catch(error){
@@ -67,7 +42,7 @@ export class UserModel{
 
     static async deleteUser(name:string):Promise<string>{
         try{
-            await fetchDB(deleteUserQuery,[name])
+            await executeQuery(deleteUserQuery,[name])
             return "User deleted succesfully"
         }
         catch(error){
@@ -90,9 +65,9 @@ export class UserModel{
         values.push(name)
         const putUserQuery = `UPDATE users SET ${clauses.join(', ')} WHERE name = $${index}`
         try{
-            const id = (await fetchDB(getUserQuery,[name])).rows[0].id
-            await fetchDB(putUserQuery,values)
-            const user = (await fetchDB(getUserByIDQuery,[id])).rows[0] as User
+            const id = (await executeQuery(getUserQuery,[name])).rows[0].id
+            await executeQuery(putUserQuery,values)
+            const user = (await executeQuery(getUserByIDQuery,[id])).rows[0] as User
             return user
         }
         catch(error){
