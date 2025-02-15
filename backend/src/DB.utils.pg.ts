@@ -18,7 +18,7 @@ export async function executeQuery(query:string,params:string[]):Promise<QueryRe
         return queryResult
     }
     catch(error){
-        console.error("Error en Modelo fetchDB():",error)
+        console.error("Error en DB.utils.pg.ts executeQuery():",error)
         throw error
     }
     finally{
