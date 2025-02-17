@@ -9,7 +9,9 @@ const pool = new Pool({
     port: +DB_PORT
 })
 
-export async function executeQuery(query:string,params:string[]):Promise<QueryResult<any>>{
+type pgParam = string | number | boolean | Date
+
+export async function executeQuery(query:string,params:pgParam[]):Promise<QueryResult<any>>{
     let client:PoolClient|undefined
     let queryResult:QueryResult<any>
     try{
