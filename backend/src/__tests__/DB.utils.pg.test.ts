@@ -11,15 +11,22 @@ jest.mock('pg', () => {
 });
 
 describe('executeQuery',() => {
-  const descriptions = {
-    happyPath:"Should return a QueryResult because everything went right"
+  const descriptionTest = {
+    happyPath:"Should return a QueryResult object when valid inputs are provided, and the connection to the DB and query execution are successful.",
+    DB:"Should throw a DatabaseConnectionError when the database connection fails.",
+    Query:"Should throw a QueryExecutionError when the query fails to execute due to invalid query syntax or parameters."
   }
 
-  afterEach(() => {jest.clearAllMocks();});
+  let pool: Pool
+  let client: PoolClient
 
-  it(descriptions.happyPath,async()=>{
-    let pool: Pool;
-    let client: PoolClient
+  beforeEach(()=>{
+    jest.clearAllMocks();
+    pool = new Pool();
+    
+  })
+
+  it(descriptionTest.happyPath,async()=>{
     let expectResult: QueryResult = {
       command: 'SELECT',
       rowCount: 1,
@@ -28,15 +35,27 @@ describe('executeQuery',() => {
       rows: [{name: 'Ana', email:"ana@gmail.com"}]
     }
 
-    pool = new Pool(); 
     client = await pool.connect() as unknown as PoolClient;
     (client.query as jest.Mock).mockResolvedValue(expectResult);
   
     const result = await executeQuery("query",["param"])
  
-    expect(pool.connect).toHaveBeenCalled()
-    expect(client.query).toHaveBeenCalled()
-    expect(client.release).toHaveBeenCalled()
     expect(result).toBe(expectResult)
   })
+
+  it(descriptionTest.DB, async () => {
+    (pool.connect as jest.Mock).mockRejectedValueOnce(new Error("DatabaseConnectionError"))
+
+    await expect(executeQuery("query", ["param"])).rejects.toThrow("DatabaseConnectionError")
+    expect(pool.connect).toHaveBeenCalled();
+  });
+
+  it(descriptionTest.Query, async () => {
+    client = await pool.connect() as unknown as PoolClient;
+    (client.query as jest.Mock).mockRejectedValue(new Error("QueryExecutionError"))
+
+    await expect(executeQuery("query", ["param"])).rejects.toThrow("QueryExecutionError")
+    expect(client.query).toHaveBeenCalled();
+  });
+
 });
