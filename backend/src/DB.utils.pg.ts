@@ -1,5 +1,7 @@
 import { DB_USER,DB_HOST,DB_PASSWORD,DB_DATABASE,DB_PORT} from "./config";
-import { Pool, PoolClient, QueryResult} from "pg";
+import { Pool, QueryResult,QueryResultRow} from "pg";
+import { catchError } from "./errors.utils";
+import { DataBaseConnectionError,QueryExecutionError } from "./errors.utils";
 
 const pool = new Pool({
     user: DB_USER,
@@ -11,19 +13,15 @@ const pool = new Pool({
 
 type pgParam = string | number | boolean | Date
 
-export async function executeQuery(query:string,params:pgParam[]):Promise<QueryResult<any>>{
-    let client:PoolClient|undefined
-    let queryResult:QueryResult<any>
-    try{
-        client = await pool.connect()
-        queryResult = await client.query(query,params)
-        return queryResult
+export async function executeQuery<T extends QueryResultRow>(query:string,params:pgParam[]):Promise<QueryResult<T>>{
+    const [DataBaseError,client] = await catchError(pool.connect())
+    if(DataBaseError){
+        throw new DataBaseConnectionError(DataBaseError.message)
     }
-    catch(error){
-        console.error("Error en DB.utils.pg.ts executeQuery():",error)
-        throw error
+    const [QueryError,queryResult] = await catchError(client.query(query,params))
+    client.release()
+    if(QueryError){
+        throw new QueryExecutionError(QueryError.message)
     }
-    finally{
-        if(client){client.release()}
-    }
+    return queryResult
 }
