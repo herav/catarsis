@@ -1,70 +1,62 @@
 import { Request,Response } from "express"
 import { UserModel } from "./users.model.pg"
 import { validatePartialUser, validateUser } from "./users.schema"
+import { catchError } from "../errors.utils"
 
 export const getUsers = async (_req:Request,res:Response) => {
-    try{
-        const users = await UserModel.getUsers()
-         res.status(200).json(users) 
-    }
-    catch(error){
+    const [error,users] = await catchError(UserModel.getUsers())
+    if(error){
         res.status(500).json({message:"Impossible to get Users"})
-        console.error("Error en Controlador.getUsers()");
+        console.error(error); 
     }
+    res.status(200).json(users) 
 }
 
 export const getUser = async (req:Request,res:Response) => {
     const {name} = req.params
-    try{
-        const user = await UserModel.getUser(name)
-        res.status(200).json(user)
-    }
-    catch(error){
+    const [error,user] = await catchError(UserModel.getUser(name))
+    if(error){
         res.status(404).json({message:"User not found"})
-        console.error("Error en Controlador.getUsers()");
+        console.error(error);
     }
+    res.status(200).json(user)
 }
 
 export const postUser = async (req:Request,res:Response) => {
     const resultValidation = validateUser(req.body)
-    if (resultValidation.success){
-        try{
-            const user = await UserModel.postUser({...resultValidation.data,id:""})
-            res.status(200).json(user)
-        }
-        catch(error){
+    if(resultValidation.success){
+        const [error,user] = await catchError(UserModel.postUser({...resultValidation.data,id:""}))
+        if(error){
             res.status(500).json({message:"Impossible to save User"})
-            console.error("Error en Controlador.postUsers()");
+            console.error(error);
         }
+        res.status(200).json(user)
     }
-    else{res.status(400).json({error:JSON.parse(resultValidation.error.message)});}
-    
+    else{
+        res.status(400).json({error:JSON.parse(resultValidation.error.message)});  
+    }
 } 
 
 export const deleteUser = async (req:Request,res:Response) => {
     const {name} = req.params
-    try{
-        const status = await UserModel.deleteUser(name)
-        res.status(200).json({message:status})
-    }
-    catch(error){
+    const [error,status] = await catchError(UserModel.deleteUser(name))
+    if(error){
         res.status(500).json({message:"Impossible to delete User"})
-        console.error("Error en controlador Controller.deleteUser()")
+        console.error(error)
     }
+    res.status(200).json({message:status})
 }
 
 export const putUser = async (req:Request,res:Response) => {
     const {name} = req.params
     const resultValidation = validatePartialUser(req.body)
     if(resultValidation.success){
-        try{
-            const user = await UserModel.putUser(name,resultValidation.data)
-            res.status(200).json(user)
-        }
-        catch(error){
+        const [error,user] = await catchError(UserModel.putUser(name,resultValidation.data))
+        if(error){
             res.status(500).json({message:"Impossible to update User"})
-            console.error("Error en Controlador.putUsers()");
+            console.error(error);
         }
+        res.status(200).json(user)
     }
     else{res.status(400).json({error:JSON.parse(resultValidation.error.message)});}
 }
