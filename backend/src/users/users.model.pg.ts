@@ -1,68 +1,77 @@
 import { executeQuery } from "../DB.utils.pg";
 import { getUsersQuery,getUserQuery,uuidQuery,postUserQuery,deleteUserQuery, getUserByIDQuery, putUserQuery} from "./users.querys";
 import { User } from "./user.class";
+import { catchError } from "../errors.utils";
 
 
 export class UserModel{
 
     static async getUsers():Promise<User[]>{
-        try{
-            const data = await executeQuery(getUsersQuery,[])
-            return data.rows as User[]  
-        }
-        catch(error){
-            console.error("Error en Modelo.getUsers()")
+        const [error,data] = await catchError(executeQuery(getUsersQuery,[]))
+        if(error){
             throw error
         }
+        return data.rows as User[]
     } 
 
     static async getUser(name:string):Promise<User>{
-        try{
-            const data = await executeQuery(getUserQuery,[name])
-            return data.rows[0] as User
-        }
-        catch(error){
-            console.error("Error en Modelo.getUser()")
+        const [error,data] = await catchError(executeQuery(getUserQuery,[name]))
+        if(error){
             throw error
         }
+        return data.rows[0] as User
     }
 
     static async postUser(user:User):Promise<User>{
-        try{
-            user.id = (await executeQuery(uuidQuery,[])).rows[0].gen_random_uuid
-            await executeQuery(postUserQuery,[user.id,user.name,user.email,user.password])
-            const newUser = (await executeQuery(getUserQuery,[user.name])).rows[0] as User
-            return newUser
+        const [IDerror,IDdata] = await catchError(executeQuery(uuidQuery,[]))
+        if(IDerror){
+            throw IDerror
         }
-        catch(error){
-            console.error("Error en Modelo.postUser()")
+        const id = IDdata.rows[0].gen_random_uuid
+
+        const [error,_data] = await catchError(executeQuery(postUserQuery,[id,user.name,user.email,user.password]))
+        if(error){
             throw error
-        }     
+        }
+
+        const [userError,userData] = await catchError(executeQuery(getUserQuery,[user.name]))
+        if(userError){
+            throw userError
+        }
+        return userData.rows[0] as User    
     }
 
     static async deleteUser(name:string):Promise<string>{
-        try{
-            await executeQuery(deleteUserQuery,[name])
-            return "User deleted succesfully"
-        }
-        catch(error){
-            console.error("Error en Modelo.deleteUser()")
+        const [error,_data] = await catchError(executeQuery(deleteUserQuery,[name]))
+        if(error){
             throw error
         }
+        return "User deleted succesfully"
     }
 
     static async putUser(name:string,data:Record<string,any>):Promise<User>{
-        try{
-            const id = (await executeQuery(getUserQuery,[name])).rows[0].id
-            const {putQuery,values} = await putUserQuery(name, data)
-            await executeQuery(putQuery,values)
-            const user = (await executeQuery(getUserByIDQuery,[id])).rows[0] as User
-            return user
+        const [errorID,dataID] = await catchError(executeQuery(getUserQuery,[name]))
+        if(errorID){
+            throw errorID
         }
-        catch(error){
-            console.error("Error en Modelo.putUser()")
-            throw error
+        const id = dataID.rows[0].id
+
+        const [queryError,queryData] = await catchError(putUserQuery(name, data))
+        if(queryError){
+            throw queryError
         }
+        const {putQuery,values} = queryData
+
+        const [putError, _putData] = await catchError(executeQuery(putQuery,values))
+        if(putError){
+            throw putError
+        }
+
+        const[userError,userData] = await catchError(executeQuery(getUserByIDQuery,[id]))
+        if(userError){
+            throw userError
+        }
+        return userData.rows[0] as User
     }
 }
 
