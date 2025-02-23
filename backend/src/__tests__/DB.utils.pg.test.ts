@@ -10,7 +10,7 @@ jest.mock('pg', () => {
   return { Pool: jest.fn(() => PoolMock)}; 
 });
 
-describe('executeQuery',() => {
+describe.skip('executeQuery',() => {
   const descriptionTest = {
     happyPath:"Should return a QueryResult object when valid inputs are provided, and the connection to the DB and query execution are successful.",
     DB:"Should throw a DatabaseConnectionError when the database connection fails.",

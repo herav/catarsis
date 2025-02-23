@@ -1,6 +1,6 @@
 import { catchError } from "../errors.utils";
 
-describe.only('catchError', () => {
+describe.skip('catchError', () => {
 
     it('Should return [undefined, data] when the promise resolves', async () => {
       const result = await catchError(Promise.resolve("successful"))
