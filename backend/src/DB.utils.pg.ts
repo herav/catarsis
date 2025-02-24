@@ -16,6 +16,7 @@ type pgParam = string | number | boolean | Date
 export async function executeQuery<T extends QueryResultRow>(query:string,params:pgParam[]):Promise<QueryResult<T>>{
     const [DataBaseError,client] = await catchError(pool.connect())
     if(DataBaseError){
+        if(DataBaseError.message==""){DataBaseError.message = `Unable to establish a connection on DB_PORT ${DB_PORT}`}
         throw new DataBaseConnectionError(DataBaseError.message)
     }
     const [QueryError,queryResult] = await catchError(client.query(query,params))
