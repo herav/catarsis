@@ -62,7 +62,7 @@ describe("UsersController",()=>{
 
     describe("getUsers", () => {
         
-      it("should set the Response with status 200 and a list of Users when UserModel.getUsers() returns an array of Users.", async () => {
+      it("should Respond status 200 and a list of Users when UserModel.getUsers() returns an array of Users.", async () => {
         (catchError as jest.Mock).mockResolvedValueOnce([null, mockUsers]);
         await getUsers(req as Request, res as Response);
         expect(res.status).toHaveBeenCalledWith(200);
@@ -70,7 +70,7 @@ describe("UsersController",()=>{
         expect(UserModel.getUsers).toHaveBeenCalledTimes(1)
       });
 
-      it("should process the error and set the Response with status 500 and {message:\"Internal Error.\"} when UserModel.getUsers() returns an error.",async()=>{
+      it("should process the error and Respond status 500 and {message:\"Internal Error.\"} when UserModel.getUsers() returns an error.",async()=>{
         (catchError as jest.Mock).mockResolvedValueOnce([mockError,null]);
         await getUsers(req as Request, res as Response);
         expect(console.error).toHaveBeenCalledWith(mockError);
@@ -79,7 +79,7 @@ describe("UsersController",()=>{
         expect(res.json).toHaveBeenCalledWith({message:"Internal Error."})
       });
 
-      it("should set the Response with status 404 and {message:\"No users found.\"} when UserModel.getUsers() returns []",async()=>{
+      it("should Respond status 404 and {message:\"No users found.\"} when UserModel.getUsers() returns []",async()=>{
         (catchError as jest.Mock).mockResolvedValueOnce([null,[]])
         await getUsers(req as Request, res as Response);
         expect(res.status).toHaveBeenCalledWith(404);
@@ -87,16 +87,18 @@ describe("UsersController",()=>{
         expect(UserModel.getUsers).toHaveBeenCalledTimes(1)
       });
 
-      it("should set the Response with status 500 and {message:\"Internal Error.\"} when UserModel.getUsers() returns null",async()=>{
+      it("should process the error and Respond status 500 and {message:\"Internal Error.\"} when UserModel.getUsers() returns null",async()=>{
         (catchError as jest.Mock).mockResolvedValueOnce([null,null]);
         await getUsers(req as Request, res as Response);
+        expect(console.error).toHaveBeenCalledWith(new Error("users is null or undefined"));
         expect(UserModel.getUsers).toHaveBeenCalledTimes(1)
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({message:"Internal Error."})
       });
-      it("should set the Response with status 500 and {message:\"Internal Error.\"} when UserModel.getUsers() returns undefined",async()=>{
+      it("should process the error and Respond status 500 and {message:\"Internal Error.\"} when UserModel.getUsers() returns undefined",async()=>{
         (catchError as jest.Mock).mockResolvedValueOnce([null,undefined]);
         await getUsers(req as Request, res as Response);
+        expect(console.error).toHaveBeenCalledWith(new Error("users is null or undefined"));
         expect(UserModel.getUsers).toHaveBeenCalledTimes(1)
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({message:"Internal Error."})

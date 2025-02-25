@@ -6,7 +6,8 @@ import { catchError } from "../errors.utils"
 export const getUsers = async (_req:Request,res:Response):Promise<void> => {
     const [error,users] = await catchError(UserModel.getUsers());
     if(error || users === null || users === undefined){
-        if(error)console.error(error); 
+        if(error){console.error(error);}
+        else {console.error(new Error("users is null or undefined"));}
         res.status(500).json({message:"Internal Error."});
         return;
     }
