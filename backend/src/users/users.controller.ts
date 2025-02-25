@@ -5,9 +5,13 @@ import { catchError } from "../errors.utils"
 
 export const getUsers = async (_req:Request,res:Response):Promise<void> => {
     const [error,users] = await catchError(UserModel.getUsers());
-    if(error){
-        console.error(error); 
-        res.status(500).json({message:"Impossible to get Users"});
+    if(error || users === null || users === undefined){
+        if(error)console.error(error); 
+        res.status(500).json({message:"Internal Error."});
+        return;
+    }
+    if(users.length === 0){
+        res.status(404).json({message:"No users found."});
         return;
     }
     res.status(200).json(users);
