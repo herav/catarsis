@@ -23,7 +23,9 @@ My guideline to prepare a test case:
 1. I use the question **What if...?** when an scenario pops up to my mind and then I write down as test.todo 
 2. I use **Should do ... when ...** to rephrase the unit test description once is already coded and tested. 
 
-
+**25/Febreuary/2025**
+Thanks to TDD I was able to realize that it is necessary to start validating and testing the very first layer of the code according a previous design arquitecture. For the user endpoint I basically have 4 main layers: PostgreSQL, executeQuery Function, UserModel, UserController.
+During the first iteration of unit testing I only ensured that each layer handled basic exceptions, but it was until I observed the interaction between each layer that I realized that many use cases were not being considered. This mistake caused the need to refactor the code many times.
 
 
 
@@ -42,4 +44,8 @@ For now, I'm gonna wait to observe the deploy behavior, so I'm not touching this
 |Wrong DB_PASSWORD at .env|CustomError [DataBaseConnectionError]: la autentificaci�n password fall� para el usuario �postgres�
 |Wrong DB_DATABASE at .env|CustomError [DataBaseConnectionError]: no existe la base de datos �catarsisX�
 
-## Bugs
+## Users Model
+I'm using the package PG to handle PostgreSQL. 
+A QueryResult is an PG's object that represents the result of a query.
+Users data flow:
+PostgreSQL => executeQuery returns a QueryResul object => UsersModel takes the relevant information to create a User object => UsersController reponds 
