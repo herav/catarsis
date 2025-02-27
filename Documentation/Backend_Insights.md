@@ -49,3 +49,26 @@ I'm using the package PG to handle PostgreSQL.
 A QueryResult is an PG's object that represents the result of a query.
 Users data flow:
 PostgreSQL => executeQuery returns a QueryResul object => UsersModel takes the relevant information to create a User object => UsersController reponds 
+
+**27/February/2025
+The way I implemented the controller and model was wrong because I did not consider many things.
+Now I can see the right steps:
+1. Consider the data structure retrieved from the database.
+2. Validate the data retrieved from the DB.
+3. Create/Parse the data structure you need. From QueryResult Object to User Object. 
+4. Establish the contract between layers. The Controller must handle Users objects, the model must handle QueryResult objects.
+
+#### USERS CRUD
+**Get Users()** the controller receives an array of Users or null from the model 
+**Get User()** the controller receives an Users object or null from the model 
+**Create User()** the controller receives an User object created or null from the model 
+**Update User()** the controller receives an User object updated or null from the model
+**Delete User()** the controller receives an true or false from the model
+
+At this point I'm only managing this data from Users:
+1. Id
+2. Name
+3. Email
+4. Password
+
+Eventually the data will grow
