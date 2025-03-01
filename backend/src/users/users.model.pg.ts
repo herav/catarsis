@@ -1,60 +1,79 @@
 import { executeQuery } from "../DB.utils.pg";
-import { getUsersQuery,getUserQuery,uuidQuery,postUserQuery,deleteUserQuery, getUserByIDQuery, putUserQuery} from "./users.querys";
+import { getUsersQuery,getUserQuery,uuidQuery,postUserQuery,deleteUserQuery, getUserByIDQuery, putUserQuery,getUserIDQuery, getUserEmailQuery} from "./users.querys";
 import { User } from "./user.class";
 import { catchError } from "../errors.utils";
 
 
 export class UserModel{
 
-    static async getUsers():Promise<User[]>{
-        const [error,data] = await catchError(executeQuery(getUsersQuery,[]))
+    static async getUsers():Promise<User[]|null>{
+        const [error,queryResult] = await catchError(executeQuery(getUsersQuery,[]))
         if(error){
             throw error
         }
-        return data.rows as User[]
+        if(typeof queryResult.rowCount === "number"  && queryResult.rowCount>0){
+            return queryResult.rows as User[]     
+        }
+        return null
     } 
 
-    static async getUser(name:string):Promise<User>{
-        const [error,data] = await catchError(executeQuery(getUserQuery,[name]))
+    static async getUser(name:string):Promise<User|null>{
+        const [error,queryResult] = await catchError(executeQuery(getUserQuery,[name]))
         if(error){
             throw error
         }
-        return data.rows[0] as User
+        if(typeof queryResult.rowCount === "number"  && queryResult.rowCount===1){
+            return queryResult.rows[0] as User 
+        }
+        return null
     }
 
-    static async postUser(user:User):Promise<User>{
-        const [IDerror,IDdata] = await catchError(executeQuery(uuidQuery,[]))
-        if(IDerror){
-            throw IDerror
+    static async postUser(user:User):Promise<User|null>{
+        const [emailError, EMAILqueryResult] = await catchError(executeQuery(getUserEmailQuery,[user.email]))
+        if(emailError){
+            throw emailError
         }
-        const id = IDdata.rows[0].gen_random_uuid
+        if(typeof EMAILqueryResult.rowCount === "number" && EMAILqueryResult.rowCount === 1){
+            return null;
+        }
 
-        const [error,_data] = await catchError(executeQuery(postUserQuery,[id,user.name,user.email,user.password]))
+        const [UUIDerror,UUIDqueryResult] = await catchError(executeQuery(uuidQuery,[]))
+        if(UUIDerror){
+            throw UUIDerror;
+        }
+        user.id = UUIDqueryResult.rows[0].gen_random_uuid
+
+        const [error,queryResult] = await catchError(executeQuery(postUserQuery,[user.id,user.name,user.email,user.password]))
+        if(error){
+            throw error;
+        }
+        if(typeof queryResult.rowCount === "number"  && queryResult.rowCount===1){
+            return user;
+        }
+        return null;
+    }
+
+    static async deleteUser(name:string):Promise<boolean>{
+        const [error,queryResult] = await catchError(executeQuery(deleteUserQuery,[name]))
         if(error){
             throw error
         }
-
-        const [userError,userData] = await catchError(executeQuery(getUserQuery,[user.name]))
-        if(userError){
-            throw userError
+        if(typeof queryResult.rowCount === "number"  && queryResult.rowCount===1){
+            return true
         }
-        return userData.rows[0] as User    
+        return false
     }
 
-    static async deleteUser(name:string):Promise<string>{
-        const [error,_data] = await catchError(executeQuery(deleteUserQuery,[name]))
-        if(error){
-            throw error
+    static async putUser(name:string,data:Record<string,any>):Promise<User|null>{
+        const [UserIDError,UserIDqueryResult] = await catchError(executeQuery(getUserIDQuery,[name]))
+        if(UserIDError){
+            throw UserIDError
         }
-        return "User deleted succesfully"
-    }
+        if(typeof UserIDqueryResult.rowCount === "number" && UserIDqueryResult.rowCount === 0){
+            return null;
+        }
 
-    static async putUser(name:string,data:Record<string,any>):Promise<User>{
-        const [errorID,dataID] = await catchError(executeQuery(getUserQuery,[name]))
-        if(errorID){
-            throw errorID
-        }
-        const id = dataID.rows[0].id
+        const id = UserIDqueryResult.rows[0].id
 
         const [queryError,queryData] = await catchError(putUserQuery(name, data))
         if(queryError){
@@ -62,16 +81,19 @@ export class UserModel{
         }
         const {putQuery,values} = queryData
 
-        const [putError, _putData] = await catchError(executeQuery(putQuery,values))
-        if(putError){
-            throw putError
+        const [error, queryResult] = await catchError(executeQuery(putQuery,values))
+        if(error){
+            throw error
         }
 
-        const[userError,userData] = await catchError(executeQuery(getUserByIDQuery,[id]))
-        if(userError){
-            throw userError
+        if(typeof queryResult.rowCount === "number"  && queryResult.rowCount===1){
+            const[userError,USERqueryResult] = await catchError(executeQuery(getUserByIDQuery,[id]))
+            if(userError){
+                throw userError
+            }
+            return USERqueryResult.rows[0] as User
         }
-        return userData.rows[0] as User
+        return null  
     }
 }
 

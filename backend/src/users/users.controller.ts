@@ -5,13 +5,13 @@ import { catchError } from "../errors.utils"
 
 export const getUsers = async (_req:Request,res:Response):Promise<void> => {
     const [error,users] = await catchError(UserModel.getUsers());
-    if(error || users === null || users === undefined){
+    if(error  || users === undefined){
         if(error){console.error(error);}
-        else {console.error(new Error("users is null or undefined"));}
+        else {console.error(new Error("users is undefined"));}
         res.status(500).json({message:"Internal Error."});
         return;
     }
-    if(users.length === 0){
+    if(users === null){
         res.status(404).json({message:"No users found."});
         return;
     }
@@ -21,8 +21,13 @@ export const getUsers = async (_req:Request,res:Response):Promise<void> => {
 export const getUser = async (req:Request,res:Response): Promise<void> => {
     const {name} = req.params;
     const [error,user] = await catchError(UserModel.getUser(name));
-    if(error){
-        console.error(error);
+    if(error || user === undefined){
+        if(error){console.error(error);}
+        else {console.error(new Error("user is undefined"));}
+        res.status(500).json({message:"Internal Error."});
+        return;
+    }
+    if(user === null){
         res.status(404).json({message:"User not found"});
         return;
     }
@@ -33,8 +38,13 @@ export const postUser = async (req:Request,res:Response): Promise<void> => {
     const resultValidation = validateUser(req.body);
     if(resultValidation.success){
         const [error,user] = await catchError(UserModel.postUser({...resultValidation.data,id:""}));
-        if(error){
-            console.error(error);
+        if(error||user === undefined){
+            if(error){console.error(error);}
+            else {console.error(new Error("user is undefined"));}
+            res.status(500).json({message:"Internal Error."});
+            return;
+        }
+        if(user === null){
             res.status(500).json({message:"Impossible to save User"});
             return;
         }
@@ -48,12 +58,19 @@ export const postUser = async (req:Request,res:Response): Promise<void> => {
 export const deleteUser = async (req:Request,res:Response): Promise<void> => {
     const {name} = req.params;
     const [error,status] = await catchError(UserModel.deleteUser(name));
-    if(error){
-        console.error(error);
-        res.status(500).json({message:"Impossible to delete User"});
+    if(error||status === undefined){
+        if(error){console.error(error);}
+        else {console.error(new Error("Delete status is undefined"));}
+        res.status(500).json({message:"Internal Error."});
         return;
     }
-    res.status(200).json({message:status});
+    if(status){
+        res.status(200).json({message:"User deleted"});
+    }
+    else{
+        res.status(400).json({message:"Impossible to delete User"});
+    }
+    
 }
 
 export const putUser = async (req:Request,res:Response): Promise<void> => {
@@ -61,8 +78,13 @@ export const putUser = async (req:Request,res:Response): Promise<void> => {
     const resultValidation = validatePartialUser(req.body);
     if(resultValidation.success){
         const [error,user] = await catchError(UserModel.putUser(name,resultValidation.data));
-        if(error){
-            console.error(error);
+        if(error||user === undefined){
+            if(error){console.error(error);}
+            else {console.error(new Error("user is undefined"));}
+            res.status(500).json({message:"Internal Error."});
+            return;
+        }
+        if(user === null){
             res.status(500).json({message:"Impossible to update User"});
             return;
         }
