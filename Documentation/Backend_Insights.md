@@ -59,11 +59,27 @@ Now I can see the right steps:
 4. Establish the contract between layers. The Controller must handle Users objects, the model must handle QueryResult objects.
 
 #### USERS CRUD
-**Get Users()** the controller receives an array of Users or null from the model 
-**Get User()** the controller receives an Users object or null from the model 
-**Create User()** the controller receives an User object created or null from the model 
-**Update User()** the controller receives an User object updated or null from the model
-**Delete User()** the controller receives an true or false from the model
+**Get Users()** 
+The controller receives an array of Users or null from the model 
+
+**Get User()** 
+The controller receives an Users object or null from the model 
+
+**Create User()** 
+The controller receives an User object created or null from the model 
+Validations:
+- Avoid creating when name is already registered.
+- Avoid creating when email is already registered.
+- What if UUID is not generated
+
+**Update User()** 
+The controller receives an User object updated or null from the model
+Validations:
+- Avoid updating when name is already registered.
+- Avoid updating when email is already registered.
+
+**Delete User()** 
+The controller receives an true or false from the model
 
 At this point I'm only managing this data from Users:
 1. Id
@@ -72,3 +88,32 @@ At this point I'm only managing this data from Users:
 4. Password
 
 Eventually the data will grow
+
+## EXPERIENCE
+
+November 2024 I started watching YouTube videos.
+26 November to 16 December I watched a Node.js tutorial.
+20 December to 25 December I watched a TypeScript tutorial.
+24 January I started Catarsis
+
+### Achievements so far:
+- TypeScript
+- PostgreSQL
+- Zod validations
+- Users endpoint
+- Jest unit testing
+
+### What's next
+- Erros log
+- Encryption
+- Jason Web Tokens
+- OAuth
+- Deployment
+- React Frontend
+- CI/CD
+- LangGraph
+- MongoDB
+- Redis
+- Docker
+- Microservices
+- Analytics
