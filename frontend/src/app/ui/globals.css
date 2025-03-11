@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  background: #2e2d2d;
+  font-family: system-ui;
+  color: #fff;
+  display: grid;
+  place-content: center;
+  min-height: 100vh;
+}
+
+button {
+  cursor: pointer;
+}
+
+.users-list{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
