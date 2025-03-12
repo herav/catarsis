@@ -1,14 +1,14 @@
 ###Home
-GET http://localhost:3000/
+GET http://localhost:4000/
 
 ### GET USERS
-GET http://localhost:3000/users
+GET http://localhost:4000/users
 
 ### GET USER by name
-GET http://localhost:3000/users/herav
+GET http://localhost:4000/users/herav
 
 ### POST USER
-POST http://localhost:3000/users
+POST http://localhost:4000/users
 Content-Type: application/json
 
 {   
@@ -18,10 +18,10 @@ Content-Type: application/json
 }
 
 ### DELETE USER
-DELETE http://localhost:3000/users/herav
+DELETE http://localhost:4000/users/herav
 
 ### PUT USER
-PUT http://localhost:3000/users/vic
+PUT http://localhost:4000/users/vic
 Content-Type: application/json
 
 {   
@@ -31,13 +31,13 @@ Content-Type: application/json
 }
 
 ###GET USERS by Option
-GET http://localhost:3000/users?option=DesireOpion 
+GET http://localhost:4000/users?option=DesireOpion 
 
 ###QUESTIONS
-GET http://localhost:3000/questions
+GET http://localhost:4000/questions
 
 ###ANSWERS
-GET http://localhost:3000/answers
+GET http://localhost:4000/answers
 
 ###FLASHBACKS
-GET http://localhost:3000/flashbacks
+GET http://localhost:4000/flashbacks
