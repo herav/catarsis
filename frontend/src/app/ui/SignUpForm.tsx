@@ -1,35 +1,50 @@
+'use client'
 import "./SignUpForm.css"
+import React from "react";
+import { useState } from "react";
 
 export function SignUpForm(){
+
+    const [formState, setFormState] = useState({
+        name: '',
+        email: '',
+        password: ''
+    });
+
+    const updateFormState = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormState((previousState) => ({
+            ...previousState,
+            [name]: value
+        }));
+    };
+
+    const submit = async(e: React.FormEvent)=>{
+        e.preventDefault();
+        const res = await fetch("http://localhost:4000/users",{
+            method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify(formState)
+        });
+        const data = await res.json();
+        console.log(data);
+    };
+
     return (
-        <form className="form-container" action="">
+        <form className="form-container" action="" onSubmit={submit}>
             <div className="form-group">
-                <label htmlFor="userName">User Name</label>
-                <input type="text" id="userName" name="userName" placeholder="User Name" /*value={formData.name} onChange={handleChange}*/ required/>
+                <label htmlFor="name">User Name</label>
+                <input type="text" id="name" name="name" placeholder="User Name" value={formState.name} onChange={updateFormState} required/>
             </div>
             <div className="form-group">
                 <label htmlFor="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="email" /*value={formData.email} onChange={handleChange}*/ required/>
+                <input type="email" id="email" name="email" placeholder="email" value={formState.email} onChange={updateFormState} required/>
             </div>
             <div className="form-group">
                 <label htmlFor="password">Password</label>
-                <input type="password" id="password" name="password" /*value={formData.password} onChange={handleChange}*/ required/>
+                <input type="password" id="password" name="password" value={formState.password} onChange={updateFormState} required/>
             </div>
             <button className="form-btn" type="submit">Sign Up</button>
         </form>    
     )
 };
-
-
-{/* <div class="input-icon">
-    <input type="text" id="nombre" name="nombre" placeholder="Ingresa tu nombre" required>
-    <i class="fas fa-user"></i>
-</div>
-<div class="input-icon">
-    <input type="email" id="email" name="email" placeholder="Ingresa tu email" required>
-    <i class="fas fa-envelope"></i>
-</div>
-<div class="input-icon">
-    <input type="password" id="password" name="password" placeholder="Ingresa tu password" required>
-    <i class="fas fa-lock"></i>
-</div> */}
