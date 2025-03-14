@@ -25,3 +25,9 @@ export function UserCard({name, userName}:User){
 //  <UserCard name="Vic" userName="herav"/>
 //  <UserCard name="Una Kravets" userName="una"/>
 //</section>
+
+//.users-list{
+//  display: flex;
+//  flex-direction: column;
+//  gap: 8px;
+//}

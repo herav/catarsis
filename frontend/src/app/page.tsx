@@ -1,8 +1,11 @@
-function Page(){
+import NavLinks from "./ui/navLinks"
+import Logo from "./ui/Logo"
+
+function HomePage(){
   return (
     <>
-      <h1>Welcome to Catarsis</h1>
+      <p>This is an effort to help people better understand how they relate to themselves and others.</p>
     </>
   )
 };
-export default Page
+export default HomePage
