@@ -21,7 +21,7 @@ export function SignUpForm(){
 
     const submit = async(e: React.FormEvent)=>{
         e.preventDefault();
-        const res = await fetch("http://localhost:4000/users",{
+        const res = await fetch("http://localhost:4000/users/signup",{
             method:"POST",
                 headers:{"Content-Type":"application/json"},
                 body:JSON.stringify(formState)
