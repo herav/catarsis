@@ -93,3 +93,24 @@ export const putUser = async (req:Request,res:Response): Promise<void> => {
     else{res.status(400).json({error:JSON.parse(resultValidation.error.message)});}
 }
 
+export const signup =async (req:Request,res:Response):Promise<void> => {
+    const resultValidation = validateUser(req.body);
+    if(resultValidation.success){
+        const [error,user] = await catchError(UserModel.postUser({...resultValidation.data,id:""}));
+        if(error||user === undefined){
+            if(error){console.error(error);}
+            else {console.error(new Error("user is undefined"));}
+            res.status(500).json({message:"Internal Error."});
+            return;
+        }
+        if(user === null){
+            res.status(500).json({message:"Impossible to save User"});
+            return;
+        }
+        res.status(200).json(user);
+    }
+    else{
+        res.status(400).json({error:JSON.parse(resultValidation.error.message)});  
+    }
+};
+
