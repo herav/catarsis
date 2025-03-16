@@ -114,3 +114,20 @@ export const signup =async (req:Request,res:Response):Promise<void> => {
     }
 };
 
+export const login =async (req:Request, res:Response):Promise<void> => {
+    const {email,password} = req.body;
+    const [error,user] = await catchError(UserModel.loginUser(email,password));
+    if(error || user === undefined){
+        if(error){console.error(error);}
+        else{console.error(new Error("user is undefined"));}
+        res.status(500).json({message:"Internal Error."});
+        return;
+    }
+    if(user === null){
+        res.status(401).json({message:"UNAUTHORIZED"})
+        return;
+    }
+    res.status(200).json(user);
+}
+
+

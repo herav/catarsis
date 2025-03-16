@@ -1,5 +1,5 @@
 import { executeQuery } from "../DB.utils.pg";
-import { getUsersQuery,getUserQuery,uuidQuery,postUserQuery,deleteUserQuery, getUserByIDQuery, putUserQuery,getUserIDQuery, getUserEmailQuery} from "./users.querys";
+import { getUsersQuery,getUserQuery,uuidQuery,postUserQuery,deleteUserQuery, getUserByIDQuery, putUserQuery,getUserIDQuery, getUserEmailQuery,getUserByEmailQuery} from "./users.querys";
 import { User } from "./user.class";
 import { catchError } from "../errors.utils";
 
@@ -94,6 +94,19 @@ export class UserModel{
             return USERqueryResult.rows[0] as User
         }
         return null  
+    }
+
+    static async loginUser(email:string,password:string):Promise<User|null>{
+        const [error,queryResult] = await catchError(executeQuery(getUserByEmailQuery,[email]));
+        if(error){
+            throw error;
+        }        
+        if(typeof queryResult.rowCount === "number" && queryResult.rowCount === 1){            
+            if(typeof queryResult.rows[0]["password"] === "string" && password === queryResult.rows[0]["password"]){
+                return queryResult.rows[0] as User;
+            }
+        }
+        return null;
     }
 }
 
