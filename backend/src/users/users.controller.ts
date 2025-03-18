@@ -2,6 +2,8 @@ import { Request,Response } from "express"
 import { UserModel } from "./users.model.pg"
 import { validatePartialUser, validateUser } from "./users.schema"
 import { catchError } from "../errors.utils"
+import {JWT_KEY} from "../config"
+import jwt from "jsonwebtoken"
 
 export const getUsers = async (_req:Request,res:Response):Promise<void> => {
     const [error,users] = await catchError(UserModel.getUsers());
@@ -127,7 +129,14 @@ export const login =async (req:Request, res:Response):Promise<void> => {
         res.status(401).json({message:"UNAUTHORIZED"})
         return;
     }
-    res.status(200).json(user);
+    const token = jwt.sign(user,JWT_KEY,{expiresIn:"1h"});
+    res.cookie("access_token",token,{
+        httpOnly:true,
+        maxAge:1000*60*60,
+        secure:false,
+        sameSite:"strict"});
+    res.send({user,token});
 }
+
 
 
