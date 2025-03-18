@@ -22,8 +22,9 @@ export function LoginForm(){
         e.preventDefault();
         const res = await fetch("http://localhost:4000/users/login",{
             method:"POST",
-                headers:{"Content-Type":"application/json"},
-                body:JSON.stringify(formState)
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify(formState),
+            credentials:"include"
         });
         const data = await res.json();
         console.log(data);
