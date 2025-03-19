@@ -63,7 +63,8 @@ Now I can see the right steps:
 The controller receives an array of Users or null from the model 
 
 **Get User()** 
-The controller receives an Users object or null from the model 
+- The controller receives an Users object or null from the model 
+- It is necessary to validate the request params: min 2 characters, max ? characters, 0 characters 
 
 **Create User()** 
 The controller receives an User object created or null from the model 
@@ -88,6 +89,21 @@ At this point I'm only managing this data from Users:
 4. Password
 
 Eventually the data will grow
+
+#### JSON WEB TOKENS
+This is the dilemma:
+The frontend is running on port localhost:3000 and the backend on port localhost:4000. 
+I have already handled the CORS issues. 
+A REST API does not save an state so I create a jws in the backend trying to handle the session stuff.
+I send the token to the client through a cookie called access_token configured with the option httpOnly when a request to /login is made. 
+Avoid fetching backend data from the client side. 
+It is better to request stuff from the frontend server to the backend because it is faster and when the data is totally fetched just send to client the render.
+The cookie access_token travels to the backend when the request is made from a component rendered in the client.
+The cookie access_token does not travel to the backend when the request is made from a component rendered only in the server.
+One way to fix problems is to fetch data from componets rendered in the client.
+How I can do it from components rendered in the server.
+It is better to check the token in a middleware.
+The API only if there is an access_token.
 
 ## EXPERIENCE
 
